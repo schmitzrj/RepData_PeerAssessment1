@@ -56,6 +56,12 @@ ggplot(intervalavg, aes(interval, steps)) +
   geom_line()
 ```
 
+This interval contains the maximum average number of steps:
+
+```{r intervalmax, echo=TRUE}
+intervalavg[intervalavg$steps == max(intervalavg$steps), 1]
+```
+
 ## Imputing missing values
 
 The data contains this many records with missing values:
