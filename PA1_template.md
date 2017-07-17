@@ -1,31 +1,30 @@
----
-title: "JSchmitzRRCP1"
-author: "Ryan Schmitz"
-date: "July 15, 2017"
-output: html_document
----
+# Reproducible Research: Peer Assessment 1
 
-### Load and preprocess the data
+
+## Loading and preprocessing the data
 
 The data is extracted from the zip and loaded into memory with appropriate data types
 
-```{r read, echo=TRUE}
+
+```r
 unzip("activity.zip", "activity.csv")
 stepdata <- read.table("activity.csv", sep = ",", header = TRUE, na.strings = "NA", 
                        colClasses = c("integer", "Date", "integer"))
 ```
 
-### What is the mean total number of steps taken per day?
+## What is mean total number of steps taken per day?
 
 Calculate the total number of steps taken per day
 
-```{r sums, echo=TRUE}
+
+```r
 sums <- aggregate(steps ~ date, data = stepdata, sum)
 ```
 
 Histogram of daily sums:
 
-```{r sumshistogram, echo=TRUE}
+
+```r
 library(ggplot2)
 ggplot(sums, aes(date)) + 
   geom_histogram(binwidth = 2) + 
@@ -33,45 +32,60 @@ ggplot(sums, aes(date)) +
   ylab("Steps Group")
 ```
 
+![](PA1_template_files/figure-html/sumshistogram-1.png)<!-- -->
+
 Mean of steps per day:
 
-```{r mean, echo=TRUE}
+
+```r
 mean(sums$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 Median of steps per day:
 
-```{r median, echo=TRUE}
+
+```r
 median(sums$steps)
 ```
 
-### What is the average daily activity pattern?
+```
+## [1] 10765
+```
+
+## What is the average daily activity pattern?
 
 Time series of the average steps taken per interval
 
-```{r intervalavg, echo=TRUE}
+
+```r
 intervalavg <- aggregate(steps ~ interval, data = stepdata, mean)
 ggplot(intervalavg, aes(interval, steps)) + 
   geom_point()
 ```
 
-Interval with the highest average steps:
+![](PA1_template_files/figure-html/intervalavg-1.png)<!-- -->
 
-```{r highestmedian, echo=TRUE}
-intervalavg[intervalavg$steps == max(intervalavg$steps), 1]
-```
-
-### Imputing missing values
+## Imputing missing values
 
 The data contains this many records with missing values:
 
-```{r missingvals, echo=TRUE}
+
+```r
 sum(is.na(stepdata$steps))
+```
+
+```
+## [1] 2304
 ```
 
 If the median for the interval is used to impute the missing values, we will see how the interpretation of the data changes:
 
-```{r imputemissingvals, echo=TRUE}
+
+```r
 stepdataimp <- stepdata
 for(i in 1:nrow(stepdataimp))
   {
@@ -84,7 +98,8 @@ for(i in 1:nrow(stepdataimp))
 
 Histogram of daily sums with imputation:
 
-```{r impsumshistogram, echo=TRUE}
+
+```r
 sumsimp <- aggregate(steps ~ date, data = stepdataimp, sum)
 ggplot(sumsimp, aes(date)) + 
   geom_histogram(binwidth = 2) + 
@@ -92,27 +107,40 @@ ggplot(sumsimp, aes(date)) +
   ylab("Steps Group")
 ```
 
+![](PA1_template_files/figure-html/impsumshistogram-1.png)<!-- -->
+
 Mean of steps per day with imputation:
 
-```{r impmean, echo=TRUE}
+
+```r
 mean(sumsimp$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 Median of steps per day with imputation:
 
-```{r impmedian, echo=TRUE}
+
+```r
 median(sumsimp$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 The histogram output is drastically changed by imputing the missing values with the interval mean.
 However, the daily median number of steps is not changed even though the daily median is made to match the mean.
 By imputing the missing data, the way the data may be interpreted will be altered and may invalidate the findings.
 
-### Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends?
 
 We add a column to the imputed data to distinguish weekdays and weekend days and use it to create an average of steps per interval and weekday type.
 
-```{r weekdaytype, echo=TRUE}
+
+```r
 stepdataimp$weekdaytype <- ""
 for(i in 1:nrow(stepdataimp))
   {
@@ -126,8 +154,11 @@ intervalavgdaytype <- aggregate(steps ~ interval + weekdaytype, data = stepdatai
 
 Then we can see how the average number of steps taken per interval is different on the weekend versus weekdays:
 
-```{r panelplot, echo=TRUE}
+
+```r
 ggplot(intervalavgdaytype, aes(interval, steps, weekdaytype)) + 
   geom_line() + 
   facet_wrap(~weekdaytype, nrow = 2)
 ```
+
+![](PA1_template_files/figure-html/panelplot-1.png)<!-- -->
