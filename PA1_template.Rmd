@@ -53,7 +53,7 @@ Time series of the average steps taken per interval
 ```{r intervalavg, echo=TRUE}
 intervalavg <- aggregate(steps ~ interval, data = stepdata, mean)
 ggplot(intervalavg, aes(interval, steps)) + 
-  geom_point()
+  geom_line()
 ```
 
 ## Imputing missing values
